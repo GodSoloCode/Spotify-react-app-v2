@@ -2,221 +2,187 @@
 
 body {
   margin: 0;
-  font-family: Orbitron;
-  background: black;
+  font-family: Orbitron, sans-serif;
+  background: radial-gradient(circle at center, #05070a 0%, #000 70%);
   overflow: hidden;
+  color: #00e5ff;
 }
 
-/* ROOT SYSTEM */
+/* MAIN SYSTEM */
 .system {
   height: 100vh;
-  width: 100vw;
   position: relative;
-  color: #00e5ff;
   overflow: hidden;
 }
 
-/* BACKGROUND (DOES NOT AFFECT LAYOUT) */
-.grid,
-.pulse {
+/* HOLOGRAPHIC GRID */
+.grid {
   position: absolute;
   inset: 0;
-  pointer-events: none;
-}
-
-.grid {
   background-image:
     radial-gradient(circle, rgba(0, 255, 255, 0.06) 1px, transparent 1px),
     linear-gradient(rgba(0, 255, 255, 0.04) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 255, 255, 0.04) 1px, transparent 1px);
   background-size: 60px 60px;
+  opacity: 0.6;
 }
 
 .pulse {
-  background: radial-gradient(circle at center, rgba(0, 229, 255, 0.18), transparent 60%);
-  animation: pulse 3s infinite;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(0, 229, 255, 0.15), transparent 60%);
+  animation: pulse 4s infinite ease-in-out;
 }
 
 @keyframes pulse {
 
   0%,
   100% {
+    transform: scale(1);
     opacity: 0.25;
   }
 
   50% {
+    transform: scale(1.08);
     opacity: 0.6;
   }
 }
 
-/* =========================
-   LOGIN CENTER (FIXED)
-========================= */
-
+/* CENTER LOGIN ORB (SAO STYLE FOCUS) */
 .center-connect {
-  position: fixed;
-  /* 🔥 KEY FIX */
+  position: absolute;
   inset: 0;
-  /* full screen */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
 }
 
 .connect-btn {
-  width: 340px;
-  height: 340px;
+  width: 380px;
+  height: 380px;
   border-radius: 50%;
   border: 2px solid #00e5ff;
-  background: radial-gradient(circle, rgba(0, 229, 255, 0.06), transparent);
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.08), transparent);
   color: #00e5ff;
-  font-size: 16px;
-  letter-spacing: 3px;
+  font-size: 18px;
+  letter-spacing: 4px;
   cursor: pointer;
   box-shadow:
-    0 0 50px rgba(0, 229, 255, 0.25),
-    inset 0 0 40px rgba(0, 229, 255, 0.08);
-  transition: 0.3s;
+    0 0 40px rgba(0, 229, 255, 0.25),
+    inset 0 0 60px rgba(0, 229, 255, 0.08);
+  transition: 0.3s ease;
 }
 
 .connect-btn:hover {
   transform: scale(1.05);
   box-shadow:
-    0 0 90px rgba(0, 229, 255, 0.5),
-    inset 0 0 60px rgba(0, 229, 255, 0.1);
+    0 0 80px rgba(0, 229, 255, 0.45),
+    inset 0 0 80px rgba(0, 229, 255, 0.12);
 }
 
 .hint {
-  margin-top: 18px;
-  font-size: 11px;
-  opacity: 0.5;
+  margin-top: 20px;
+  font-size: 12px;
+  opacity: 0.6;
+  letter-spacing: 2px;
 }
 
-/* =========================
-   PANELS (ONLY AFTER LOGIN)
-========================= */
-
+/* PANELS */
 .panel {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: min(420px, 32vw);
-  height: 82%;
-  padding: 16px;
+  width: 420px;
+  height: 80%;
+  padding: 18px;
+  border-radius: 20px;
   background: rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(0, 229, 255, 0.6);
-  border-radius: 18px;
-  backdrop-filter: blur(8px);
-  overflow: hidden;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  box-shadow: 0 0 30px rgba(0, 229, 255, 0.08);
 }
 
 .left {
-  left: clamp(16px, 3vw, 60px);
+  left: 40px;
 }
 
 .right {
-  right: clamp(16px, 3vw, 60px);
+  right: 40px;
 }
 
-/* =========================
-   CENTER PLAYER
-========================= */
-
-.center-player {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
+/* TITLES */
+.title {
+  font-size: 14px;
+  letter-spacing: 3px;
+  margin-bottom: 14px;
+  opacity: 0.9;
 }
 
-.player-img {
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  border: 2px solid #00e5ff;
-  box-shadow: 0 0 40px rgba(0, 229, 255, 0.3);
-}
-
-.player-title {
-  margin-top: 10px;
-  font-size: 12px;
-}
-
-.player-sub {
-  font-size: 10px;
-  opacity: 0.6;
-}
-
-.controls {
-  margin-top: 10px;
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-.ctrl {
-  padding: 6px 12px;
-  border: 1px solid #00e5ff;
-  background: transparent;
-  color: #00e5ff;
-  border-radius: 20px;
-  cursor: pointer;
-}
-
-.player-empty {
-  font-size: 11px;
-  opacity: 0.4;
-}
-
-/* =========================
-   TRACKS / UI
-========================= */
-
+/* INPUT */
 .input {
   width: 100%;
   padding: 10px;
+  border-radius: 20px;
   border: 1px solid #00e5ff;
   background: transparent;
   color: white;
-  border-radius: 20px;
-  margin-bottom: 10px;
+  outline: none;
+  margin-bottom: 12px;
 }
 
+/* BUTTON */
 .btn {
   width: 100%;
   padding: 10px;
+  border-radius: 25px;
   border: 1px solid #00e5ff;
   background: transparent;
   color: #00e5ff;
-  border-radius: 25px;
-  margin-bottom: 10px;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: 0.2s;
 }
 
+.btn:hover {
+  background: rgba(0, 229, 255, 0.1);
+}
+
+/* SCROLL */
 .scroll {
   height: 72%;
   overflow-y: auto;
+  padding-right: 4px;
 }
 
+/* TRACK ITEMS (MORE SAO / HOVER FOCUS) */
 .track,
 .playlist-item {
   display: flex;
-  gap: 10px;
-  padding: 8px;
-  border-left: 2px solid #00e5ff;
-  margin-bottom: 8px;
-  cursor: grab;
-  border-radius: 12px;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  transition: 0.25s;
+  background: rgba(0, 0, 0, 0.3);
 }
 
+.track:hover {
+  transform: translateX(6px) scale(1.02);
+  border-color: rgba(0, 229, 255, 0.5);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
+}
+
+/* COVER */
 .cover {
-  width: 50px;
-  height: 50px;
-  border-radius: 6px;
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
 }
 
+/* TEXT */
 .meta .name {
   font-size: 12px;
 }
@@ -226,8 +192,138 @@ body {
   opacity: 0.6;
 }
 
-/* DROP */
+/* REMOVE */
+.remove {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: #ff4d4d;
+  cursor: pointer;
+}
+
+/* DROP ZONE */
 .empty {
-  opacity: 0.4;
+  text-align: center;
+  opacity: 0.5;
+  margin-top: 20px;
+}
+
+@keyframes bootFade {
+  0% {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* SYSTEM BOOT OVERLAY */
+.boot-overlay {
+  position: absolute;
+  inset: 0;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  animation: bootFade 1.2s ease forwards;
+}
+
+/* SCAN LINES (SAO / HOLO EFFECT) */
+.system::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(to bottom,
+      rgba(0, 229, 255, 0.05),
+      rgba(0, 229, 255, 0.05) 1px,
+      transparent 2px,
+      transparent 6px);
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* GLOW BREATHING LAYER */
+.system::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(circle at center, rgba(0, 229, 255, 0.08), transparent 60%);
+  animation: breathe 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes breathe {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: scale(1.08);
+    opacity: 0.7;
+  }
+}
+
+/* BOOT SCREEN */
+.boot-overlay {
+  position: absolute;
+  inset: 0;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* CENTER PLAYER */
+.center-player {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: 260px;
+}
+
+.player-img {
+  width: 180px;
+  height: 180px;
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(0, 229, 255, 0.2);
+}
+
+.player-title {
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.player-sub {
   font-size: 11px;
+  opacity: 0.6;
+}
+
+.controls {
+  margin-top: 10px;
+}
+
+.ctrl {
+  margin: 4px;
+  padding: 6px 12px;
+  border: 1px solid #00e5ff;
+  background: transparent;
+  color: #00e5ff;
+  cursor: pointer;
+  border-radius: 20px;
+}
+
+.player-empty {
+  opacity: 0.5;
 }
