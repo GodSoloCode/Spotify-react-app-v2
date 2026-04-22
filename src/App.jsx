@@ -18,14 +18,11 @@ export default function App() {
   const [playlistName, setPlaylistName] = useState("NEURAL CORE");
 
   const [currentTrack, setCurrentTrack] = useState(null);
-  const [audio, setAudio] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  // BOOT IMMERSION STATE
   const [booting, setBooting] = useState(true);
 
+  // BOOT
   useEffect(() => {
-    const t = setTimeout(() => setBooting(false), 1200);
+    const t = setTimeout(() => setBooting(false), 1000);
     return () => clearTimeout(t);
   }, []);
 
@@ -39,7 +36,7 @@ export default function App() {
     const exchange = async () => {
       const data = await getToken(code);
 
-      if (data.access_token) {
+      if (data?.access_token) {
         setToken(data.access_token);
         window.history.replaceState({}, document.title, "/");
       }
@@ -48,39 +45,24 @@ export default function App() {
     exchange();
   }, []);
 
+  // SEARCH
   const handleSearch = async () => {
-    if (!token || !query) return;
+    if (!token || !query.trim()) return;
     const results = await searchTracks(token, query);
-    setTracks(results);
+    setTracks(results || []);
   };
 
-  const playTrack = (track) => {
+  // ENTER SEARCH
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleSearch();
+  };
+
+  // SELECT TRACK (NO AUDIO, NO PLAY)
+  const selectTrack = (track) => {
     setCurrentTrack(track);
-
-    if (audio) audio.pause();
-
-    if (track.preview_url) {
-      const newAudio = new Audio(track.preview_url);
-      newAudio.play();
-      setAudio(newAudio);
-      setIsPlaying(true);
-    } else {
-      window.open(track.external_urls.spotify, "_blank");
-    }
   };
 
-  const togglePlay = () => {
-    if (!audio) return;
-
-    if (isPlaying) {
-      audio.pause();
-      setIsPlaying(false);
-    } else {
-      audio.play();
-      setIsPlaying(true);
-    }
-  };
-
+  // DRAG DROP
   const onDrop = (e) => {
     e.preventDefault();
     if (!currentTrack) return;
@@ -96,14 +78,36 @@ export default function App() {
     setPlaylist((prev) => prev.filter((t) => t.id !== id));
   };
 
+  // SAVE PLAYLIST (FIXED + SIMPLE)
   const savePlaylist = async () => {
-    const user = await getUser(token);
-    const created = await createPlaylist(token, user.id, playlistName);
+    if (!token || playlist.length === 0) return;
 
-    await addTracks(token, created.id, playlist.map((t) => t.uri));
+    try {
+      const user = await getUser(token);
+      const userId = user?.id;
 
-    setPlaylist([]);
-    alert("SYNC COMPLETE ✔");
+      if (!userId) {
+        alert("Failed to get user");
+        return;
+      }
+
+      const created = await createPlaylist(token, userId, playlistName);
+
+      if (!created?.id) {
+        alert("Playlist creation failed");
+        return;
+      }
+
+      const uris = playlist.map((t) => t.uri).filter(Boolean);
+
+      await addTracks(token, created.id, uris);
+
+      setPlaylist([]);
+      alert("PLAYLIST SAVED ✔");
+    } catch (err) {
+      console.error(err);
+      alert("Save failed (check console)");
+    }
   };
 
   // BOOT SCREEN
@@ -127,22 +131,22 @@ export default function App() {
       {!token && (
         <div className="center-connect">
           <button className="connect-btn" onClick={loginSpotify}>
-            CONNECT TO NEURAL SYSTEM
+            CONNECT SYSTEM
           </button>
-          <div className="hint">spotify authorization required</div>
         </div>
       )}
 
-      {/* LEFT */}
+      {/* LEFT SEARCH */}
       {token && (
         <div className="panel left">
-          <div className="title">SEARCH NODE</div>
+          <div className="title">SEARCH</div>
 
           <input
             className="input"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search tracks..."
+            onKeyDown={handleKeyDown}
+            placeholder="Search songs or artists..."
           />
 
           <button className="btn" onClick={handleSearch}>
@@ -154,9 +158,14 @@ export default function App() {
               <div
                 key={t.id}
                 className="track"
-                onClick={() => playTrack(t)}
+                draggable
+                onDragStart={() => setCurrentTrack(t)}
+                onClick={() => selectTrack(t)}
               >
-                <img src={t.album.images[0]?.url} className="cover" />
+                <img
+                  src={t.album.images[0]?.url}
+                  className="cover"
+                />
 
                 <div className="meta">
                   <div className="name">{t.name}</div>
@@ -170,9 +179,10 @@ export default function App() {
         </div>
       )}
 
-      {/* CENTER PLAYER */}
+      {/* CENTER (CLEAN FOCUS VIEW) */}
       {token && (
         <div className="center-player">
+
           {currentTrack ? (
             <>
               <img
@@ -187,31 +197,23 @@ export default function App() {
               <div className="player-sub">
                 {currentTrack.artists.map((a) => a.name).join(", ")}
               </div>
-
-              <div className="controls">
-                <button className="ctrl" onClick={togglePlay}>
-                  {isPlaying ? "PAUSE" : "PLAY"}
-                </button>
-
-                <button
-                  className="ctrl"
-                  onClick={() =>
-                    window.open(currentTrack.external_urls.spotify, "_blank")
-                  }
-                >
-                  OPEN
-                </button>
-              </div>
             </>
           ) : (
-            <div className="player-empty">SELECT TRACK</div>
+            <div className="player-empty">
+              SELECT TRACK
+            </div>
           )}
+
         </div>
       )}
 
-      {/* RIGHT */}
+      {/* RIGHT PLAYLIST */}
       {token && (
-        <div className="panel right" onDragOver={(e) => e.preventDefault()} onDrop={onDrop}>
+        <div
+          className="panel right"
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={onDrop}
+        >
           <div className="title">{playlistName}</div>
 
           <input
@@ -221,17 +223,20 @@ export default function App() {
           />
 
           <button className="btn" onClick={savePlaylist}>
-            SAVE
+            SAVE PLAYLIST
           </button>
 
           <div className="scroll">
             {playlist.length === 0 && (
-              <div className="empty">DROP HERE</div>
+              <div className="empty">DROP TRACKS HERE</div>
             )}
 
             {playlist.map((t) => (
               <div key={t.id} className="playlist-item">
-                <img src={t.album.images[0]?.url} className="cover" />
+                <img
+                  src={t.album.images[0]?.url}
+                  className="cover"
+                />
 
                 <div className="meta">
                   <div className="name">{t.name}</div>
@@ -240,7 +245,10 @@ export default function App() {
                   </div>
                 </div>
 
-                <button className="remove" onClick={() => removeTrack(t.id)}>
+                <button
+                  className="remove"
+                  onClick={() => removeTrack(t.id)}
+                >
                   ✕
                 </button>
               </div>
