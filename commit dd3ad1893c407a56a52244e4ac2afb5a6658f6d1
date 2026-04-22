@@ -1,0 +1,29 @@
+[33mcommit dd3ad1893c407a56a52244e4ac2afb5a6658f6d1[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: BendreShaw <BendreShaw>
+Date:   Wed Apr 22 18:18:05 2026 +0200
+
+    working, playlist save error
+
+[33mcommit 8cd488dd5bf338c8a8dd0e6f7fe8dde956056027[m
+Author: BendreShaw <BendreShaw>
+Date:   Wed Apr 22 18:02:58 2026 +0200
+
+    stable - auth working - app running - broken player
+
+[33mcommit 7199b24a39ac4afd32da061c1ca0960633ef55e1[m
+Author: BendreShaw <BendreShaw>
+Date:   Wed Apr 22 17:57:24 2026 +0200
+
+    stable: spotify auth + UI working again
+
+[33mcommit d8991cb935f2a37a9592f8d8213141d35e1a75e9[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: BendreShaw <BendreShaw>
+Date:   Wed Apr 22 17:52:23 2026 +0200
+
+    stable working version - baseline restore point
+
+[33mcommit 9ff3fee8fea70182bf446500fa69307144065e3f[m
+Author: BendreShaw <BendreShaw>
+Date:   Wed Apr 22 15:35:01 2026 +0200
+
+    Initial React app setup
