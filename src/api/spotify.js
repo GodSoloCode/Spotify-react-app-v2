@@ -5,13 +5,13 @@ const scopes = [
   "user-read-private",
   "user-read-email",
   "playlist-modify-public",
+  "playlist-modify-private",
 ];
 
-// --------------------
-// LOGIN (PKCE)
-// --------------------
+// -------------------- HELPERS --------------------
 const generateRandomString = (length) => {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let text = "";
   for (let i = 0; i < length; i++) {
     text += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -32,6 +32,7 @@ const base64encode = (input) => {
     .replace(/=+$/, "");
 };
 
+// -------------------- LOGIN --------------------
 export const loginSpotify = async () => {
   const codeVerifier = generateRandomString(128);
   const hashed = await sha256(codeVerifier);
@@ -48,12 +49,11 @@ export const loginSpotify = async () => {
     code_challenge: codeChallenge,
   });
 
-  window.location = `https://accounts.spotify.com/authorize?${args.toString()}`;
+  window.location.href =
+    "https://accounts.spotify.com/authorize?" + args.toString();
 };
 
-// --------------------
-// TOKEN EXCHANGE
-// --------------------
+// -------------------- TOKEN --------------------
 export const getToken = async (code) => {
   const codeVerifier = localStorage.getItem("code_verifier");
 
@@ -76,9 +76,7 @@ export const getToken = async (code) => {
   return await res.json();
 };
 
-// --------------------
-// SEARCH TRACKS
-// --------------------
+// -------------------- SEARCH --------------------
 export const searchTracks = async (token, query) => {
   const res = await fetch(
     `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`,
@@ -90,5 +88,55 @@ export const searchTracks = async (token, query) => {
   );
 
   const data = await res.json();
-  return data.tracks.items;
+  return data?.tracks?.items || [];
+};
+
+// -------------------- USER --------------------
+export const getUser = async (token) => {
+  const res = await fetch("https://api.spotify.com/v1/me", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return await res.json();
+};
+
+// -------------------- PLAYLIST --------------------
+export const createPlaylist = async (token, userId, name) => {
+  const res = await fetch(
+    `https://api.spotify.com/v1/users/${userId}/playlists`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        public: false,
+      }),
+    }
+  );
+
+  return await res.json();
+};
+
+// -------------------- ADD TRACKS --------------------
+export const addTracks = async (token, playlistId, uris) => {
+  const res = await fetch(
+    `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        uris,
+      }),
+    }
+  );
+
+  return await res.json();
 };
